@@ -1,0 +1,37 @@
+def kotlin_version = '1.1.2-5'
+
+subprojects {
+    project.buildscript {
+        repositories {
+            jcenter()
+        }
+        dependencies {
+            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_version}"
+        }
+    }
+    project.plugins.whenPluginAdded { plugin ->
+        if ('com.android.build.gradle.AppPlugin'.equals(plugin.class.name) ||
+                'com.android.build.gradle.LibraryPlugin'.equals(plugin.class.name) ||
+
+                'org.gradle.api.plugins.JavaPlugin'.equals(plugin.class.name)) {
+            if ('org.gradle.api.plugins.JavaPlugin'.equals(plugin.class.name)) {
+                project.plugins.apply 'kotlin'
+                project.dependencies.compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:${kotlin_version}"
+                project.sourceSets {
+                    main.java.srcDirs += 'src/main/kotlin'
+                    test.java.srcDirs += 'src/test/kotlin'
+                    androidTest.java.srcDirs += 'src/androidTest/kotlin'
+                }
+            } else {
+                project.plugins.apply 'kotlin-android'
+                project.dependencies.compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:${kotlin_version}"
+                project.android.sourceSets {
+                    main.java.srcDirs += 'src/main/kotlin'
+                    test.java.srcDirs += 'src/test/kotlin'
+                    androidTest.java.srcDirs += 'src/androidTest/kotlin'
+                }
+                project.plugins.apply 'kotlin-kapt'
+            }
+        }
+    }
+}

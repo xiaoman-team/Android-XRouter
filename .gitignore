@@ -6,6 +6,6 @@ local.properties
 build
 .idea
 *.swp
-plugin
 freeline*
 bugly
+repo

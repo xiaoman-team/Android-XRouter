@@ -12,6 +12,9 @@ allprojects {
 //                digest(DigestAuthentication)
             }
         }
+        maven {
+            url uri('../repo')
+        }
     }
 }
 

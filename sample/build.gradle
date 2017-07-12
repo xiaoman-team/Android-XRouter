@@ -1,12 +1,40 @@
+buildscript {
+    repositories {
+        maven {
+            url uri('../repo')
+        }
+        maven {
+            url "http://120.24.219.64:8808/nexus/content/groups/public"
+            credentials {
+                username 'android'
+                password 'android@xiaoman.cn'
+            }
+            authentication {
+                basic(BasicAuthentication)
+//                digest(DigestAuthentication)
+            }
+        }
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.2-5"
+        classpath 'cn.xiaoman.android.router:plugin:0.4-SNAPSHOT'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
 apply plugin: 'com.android.application'
+//apply plugin: 'kotlin-android'
+apply plugin: 'android.router'
+
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "25.0.3"
+    buildToolsVersion "26.0.0"
     defaultConfig {
-        applicationId "cn.xiaoman.android.router"
+        applicationId "cn.xiaoman.android.router.sample"
         minSdkVersion 15
-        targetSdkVersion 26
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

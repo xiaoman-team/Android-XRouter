@@ -30,10 +30,9 @@ android {
 
 dependencies {
 
-    def dependencies = rootProject.ext.andRouterRouterDependencies
-
     compile project(':annotation')
-    compile dependencies.appcompatV7
+//    compile 'cn.xiaoman.android.router:annotation:' + VERSION_NAME
+    compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.jakewharton.timber:timber:3.1.0'
     compile 'org.apache.commons:commons-collections4:4.0'
     // Set this dependency to build and run Espresso tests
@@ -46,3 +45,5 @@ dependencies {
 
 
 }
+
+apply from: "${rootDir}/mavenUpload.gradle"

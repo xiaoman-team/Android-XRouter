@@ -18,14 +18,14 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.2-5"
-        classpath 'cn.xiaoman.android.router:plugin:0.4-SNAPSHOT'
+        classpath 'cn.xiaoman.android.router:plugin:0.5-SNAPSHOT'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 apply plugin: 'com.android.application'
 //apply plugin: 'kotlin-android'
-//apply plugin: 'android.router'
+apply plugin: 'android.router'
 
 
 android {
@@ -45,6 +45,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
 dependencies {
@@ -53,7 +57,17 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:26.+'
-    annotationProcessor project(':compiler')
-    compile project(':router')
+//    annotationProcessor project(':compiler')
+//    compile project(':router')
     testCompile 'junit:junit:4.12'
+}
+//拷贝生成的 assets/目录到打包目录
+android.applicationVariants.all { variant ->
+    def variantName = variant.name
+    def variantNameCapitalized = variantName.capitalize()
+    def copyMetaInf = tasks.create "copyMetaInf$variantNameCapitalized", Copy
+    copyMetaInf.from project.fileTree(javaCompile.destinationDir)
+    copyMetaInf.include "assets/**"
+    copyMetaInf.into "build/intermediates/sourceFolderJavaResources/$variantName"
+    tasks.findByName("transformResourcesWithMergeJavaResFor$variantNameCapitalized").dependsOn copyMetaInf
 }

@@ -11,7 +11,6 @@ dependencies {
     compile gradleApi()
     compile localGroovy()
     compile 'com.android.tools.build:gradle:2.3.3'
-    compile 'com.hujiang.aspectjx:gradle-android-plugin-aspectjx:1.0.10'
 //    compile 'com.github.Archinamon:GradleAspectJ-Android:3.0.3'
 }
 sourceCompatibility = "1.7"

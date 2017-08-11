@@ -2,21 +2,12 @@ package cn.xiaoman.android.router.compiler;
 
 
 import com.google.auto.service.AutoService;
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.WildcardTypeName;
+import com.google.gson.Gson;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Collections;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -26,33 +17,31 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
 
 import cn.xiaoman.android.router.annotation.RouterMap;
-import cn.xiaoman.android.router.compiler.exception.TargetErrorException;
 
-@SupportedOptions({"moduleName"})
 @AutoService(Processor.class)
 public class RouterProcessor extends AbstractProcessor {
-    private Messager mMessager;
-    private Filer mFiler;
-    private Elements elementUtils;
-    private Map<String, String> options;
+    private Types types;
+    private Messager messager;
+    private Filer filer;
+
+    public static final String ASSET_PATH = "assets/router/";
+    public static final String FILE_SUFFIX = ".json";
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        mMessager = processingEnv.getMessager();
-        mFiler = processingEnv.getFiler();
-        elementUtils = processingEnv.getElementUtils();
-        options = processingEnv.getOptions();
+        messager = processingEnv.getMessager();
+        filer = processingEnv.getFiler();
+        types = processingEnv.getTypeUtils();
     }
 
     @Override
@@ -67,14 +56,35 @@ public class RouterProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(RouterMap.class);
-
         try {
-            TypeSpec type = getRouterTableInitializer(elements);
-            if (type != null) {
-                JavaFile.builder("cn.xiaoman.android.router.router.router", type)
-                        .build().writeTo(mFiler);
+
+            if (annotations == null || annotations.isEmpty()) {
+                System.out.println(">>> annotations is null... <<<");
+                return true;
             }
+
+            HashMap<String, String> map = new HashMap<>();
+            for (TypeElement annotation : annotations) {
+                Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(annotation);
+                for (Element element : elements) {
+                    RouterMap uri = element.getAnnotation(RouterMap.class);
+                    TypeElement typeElement = (TypeElement) element;
+
+                    String[] value = uri.value();
+                    String clazzName = typeElement.getQualifiedName().toString();
+                    for (String key : value) {
+                        //避免Key是空的情况
+                        if (key.length() == 0) {
+                            break;
+                        }
+                        map.put(key, clazzName);
+                    }
+
+                }
+            }
+            //生成Java代码
+            createJava(map);
+
         } catch (FilerException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -84,65 +94,63 @@ public class RouterProcessor extends AbstractProcessor {
         return true;
     }
 
-    private TypeSpec getRouterTableInitializer(Set<? extends Element> elements) throws ClassNotFoundException, TargetErrorException {
-        if (elements == null || elements.size() == 0) {
-            return null;
-        }
-        TypeElement activityType = elementUtils.getTypeElement("android.app.Activity");
+    /**
+     * javapoet 🔚介绍
+     * <p>
+     * http://www.jianshu.com/p/95f12f72f69a
+     * http://www.jianshu.com/p/76e9e3a8ec0f
+     * http://blog.csdn.net/crazy1235/article/details/51876192
+     * http://blog.csdn.net/qq_26376637/article/details/52374063
+     *
+     * @param map
+     * @throws Exception
+     */
+    private void createJava(HashMap<String, String> map) throws Exception {
+        String content = new Gson().toJson(map);
+        //打印出内容
+        System.out.println(">>> content:... <<<   " + content);
+        writeFile(content);
+    }
 
-        ParameterizedTypeName mapTypeName = ParameterizedTypeName
-                .get(ClassName.get(Map.class), ClassName.get(String.class), ParameterizedTypeName.get(ClassName.get(Class.class), WildcardTypeName.subtypeOf(ClassName.get(activityType))));
-        ParameterSpec mapParameterSpec = ParameterSpec.builder(mapTypeName, "router")
-                .build();
-        MethodSpec.Builder routerInitBuilder = MethodSpec.methodBuilder("initRouterTable")
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(mapParameterSpec);
-        for (Element element : elements) {
-            if (element.getKind() != ElementKind.CLASS) {
-                throw new TargetErrorException();
-            }
-            RouterMap router = element.getAnnotation(RouterMap.class);
-            String[] routerUrls = router.value();
-            for (String routerUrl : routerUrls) {
-                routerInitBuilder.addStatement("router.put($S, $T.class)", routerUrl, ClassName.get((TypeElement) element));
-            }
-        }
-        MethodSpec routerInitMethod = routerInitBuilder.build();
-        TypeElement routerInitializerType = elementUtils.getTypeElement("cn.xiaoman.android.router.router.IActivityRouteTableInitializer");
-        String className = "AnnotatedRouterTableInitializer";
-        if (options.containsKey("moduleName")) {
-            className = className + "_" + options.get("moduleName");
-        }
+    /**
+     * 生成JSON文件保存到Assets里面
+     *
+     * @param content
+     * @throws Exception
+     */
+    private void writeFile(String content) throws Exception {
+        FileObject fileObject = createResource();
+//        FileObject fileObject = createSourcePath();
 
+        Writer writer = fileObject.openWriter();
+        writer.write(content);
+        writer.close();
+//        System.out.println("Done");
+    }
 
-        ClassName namedBoards = ClassName.get("cn.xiaoman.android.router.router", "ActivityRouter");
+    /**
+     * 获取Resource地址
+     *
+     * @return
+     * @throws IOException
+     */
+    private FileObject createResource() throws IOException {
+        String string = types.toString();
+        //使用HashCode作为文件名字，避免冲突
+        int hashCode = types.hashCode();
+//        System.out.println("typename:  " + string + "   hashCode: " + hashCode);
 
-        ClassName name = ClassName.get("cn.xiaoman.android.router.router.router", className);
-
-        MethodSpec.Builder aopBuild = MethodSpec.methodBuilder("initRouter")
-                .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(AnnotationSpec.builder(Around.class)
-                        .addMember("value", "\"execution(* cn.xiaoman.android.router.router.ActivityRouter.init(android.content.Context))\"")
-                        .build())
-                .addParameter(ParameterizedTypeName.get(ProceedingJoinPoint.class), "proceedingJoinPoint")
-                .addStatement("$T activityRouter = ($T) proceedingJoinPoint.getTarget()", namedBoards, namedBoards)
-                .addStatement("activityRouter.initActivityRouterTable(new $T())", name)
-                .addStatement("proceedingJoinPoint.proceed()")
-                .addException(Throwable.class);
-
-        return TypeSpec.classBuilder(className)
-                .addSuperinterface(ClassName.get(routerInitializerType))
-                .addModifiers(Modifier.PUBLIC)
-                .addMethod(routerInitMethod)
-                .addMethod(aopBuild.build())
-                .addAnnotation(Aspect.class)
-                .build();
+        String path = ASSET_PATH + hashCode + FILE_SUFFIX;
+//        String path = ASSET_JSON;
+//        String path =METADATA_PATH;
+        FileObject resource = filer
+                .createResource(StandardLocation.CLASS_OUTPUT, "", path);
+        return resource;
     }
 
 
     private void error(String error) {
-        mMessager.printMessage(Diagnostic.Kind.ERROR, error);
+        messager.printMessage(Diagnostic.Kind.ERROR, error);
     }
 
 

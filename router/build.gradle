@@ -35,6 +35,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.jakewharton.timber:timber:3.1.0'
     compile 'org.apache.commons:commons-collections4:4.0'
+    compile 'com.google.code.gson:gson:2.7'
     // Set this dependency to build and run Espresso tests
     // Optional -- UI testing with Espresso
     testCompile 'junit:junit:4.12'

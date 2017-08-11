@@ -3,15 +3,19 @@ package cn.xiaoman.android.router.router;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -67,6 +71,51 @@ public class ActivityRouter extends BaseRouter {
     public void init(Context appContext, IActivityRouteTableInitializer initializer) {
         super.init(appContext);
         initActivityRouterTable(initializer);
+        initActivityRouterTable(new IActivityRouteTableInitializer() {
+            @Override
+            public void initRouterTable(Map<String, Class<? extends Activity>> router) {
+                AssetManager assetManager = mBaseContext.getResources().getAssets();
+                String root = "router";
+                try {
+                    String[] list = assetManager.list(root);
+
+                    Map<String, String> result = new HashMap<>();
+                    for (String path : list) {
+                        InputStream inputStream = assetManager.open(root + "/" + path);
+                        String s = InputStream2String(inputStream);
+                        Map<String, String> map = new Gson().fromJson(s, Map.class);
+                        result.putAll(map);
+
+                    }
+
+                    for (Map.Entry<String, String> entry : result.entrySet()) {
+                        try {
+                            Class clazz = Class.forName(entry.getValue());
+                            router.put(entry.getKey(), clazz);
+                        } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
+    private static String InputStream2String(InputStream is) {
+        String result = "";
+        try {
+            byte[] buffer = new byte[is.available()];
+            is.read(buffer);//输出流
+            result = new String(buffer, "utf-8");
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     @Override

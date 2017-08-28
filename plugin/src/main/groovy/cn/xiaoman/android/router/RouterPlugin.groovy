@@ -2,8 +2,11 @@ package cn.xiaoman.android.router
 
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.Copy
+
 /**
  * Created by zhangqijun on 2017/5/16.
  */
@@ -27,16 +30,33 @@ public class RouterPlugin implements Plugin<Project> {
             }
 
             project.dependencies {
-                compile 'cn.xiaoman.android.router:router:0.5-SNAPSHOT'
+                compile 'cn.xiaoman.android.router:router:0.6-SNAPSHOT'
 
                 if (hasKotlin) {
-                    kapt 'cn.xiaoman.android.router:compiler:0.5-SNAPSHOT'
+                    kapt 'cn.xiaoman.android.router:compiler:0.6-SNAPSHOT'
                 } else if (hasApt) {
-                    apt 'cn.xiaoman.android.router:compiler:0.5-SNAPSHOT'
+                    apt 'cn.xiaoman.android.router:compiler:0.6-SNAPSHOT'
                 } else {
-                    annotationProcessor 'cn.xiaoman.android.router:compiler:0.5-SNAPSHOT'
+                    annotationProcessor 'cn.xiaoman.android.router:compiler:0.6-SNAPSHOT'
                 }
 
+            }
+            if (hasApp) {
+                project.afterEvaluate(new Action<Project>() {
+                    @Override
+                    void execute(Project project1) {
+                        project.android.applicationVariants.each { variant ->
+                            def variantName = variant.name
+                            def variantNameCapitalized = variantName.capitalize()
+                            def copyRouterInf = project.tasks.create("copyRouterInf$variantNameCapitalized", Copy) {
+                                from project.fileTree(variant.javaCompile.destinationDir)
+                                include "assets/**"
+                                into "build/intermediates/sourceFolderJavaResources/$variantName"
+                            }
+                            project.tasks.findByName("transformResourcesWithMergeJavaResFor$variantNameCapitalized").dependsOn(copyRouterInf)
+                        }
+                    }
+                })
             }
 
 //            if (hasApp) {

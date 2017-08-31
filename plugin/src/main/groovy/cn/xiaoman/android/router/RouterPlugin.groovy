@@ -16,8 +16,8 @@ public class RouterPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
 
-        def hasApp = project.plugins.withType(AppPlugin)
-        def hasLib = project.plugins.withType(LibraryPlugin)
+        def hasApp = project.plugins.hasPlugin(AppPlugin)
+        def hasLib = project.plugins.hasPlugin(LibraryPlugin)
         def hasApt = project.plugins.hasPlugin('com.neenbedankt.android-apt')
         def hasKotlin = project.plugins.hasPlugin('kotlin-android')
         def hasKapt = project.plugins.hasPlugin('kotlin-kapt')
@@ -30,14 +30,14 @@ public class RouterPlugin implements Plugin<Project> {
             }
 
             project.dependencies {
-                compile 'cn.xiaoman.android.router:router:0.6-SNAPSHOT'
+                compile 'cn.xiaoman.android.router:router:0.7-SNAPSHOT'
 
                 if (hasKotlin) {
-                    kapt 'cn.xiaoman.android.router:compiler:0.6-SNAPSHOT'
+                    kapt 'cn.xiaoman.android.router:compiler:0.7-SNAPSHOT'
                 } else if (hasApt) {
-                    apt 'cn.xiaoman.android.router:compiler:0.6-SNAPSHOT'
+                    apt 'cn.xiaoman.android.router:compiler:0.7-SNAPSHOT'
                 } else {
-                    annotationProcessor 'cn.xiaoman.android.router:compiler:0.6-SNAPSHOT'
+                    annotationProcessor 'cn.xiaoman.android.router:compiler:0.7-SNAPSHOT'
                 }
 
             }
@@ -46,12 +46,29 @@ public class RouterPlugin implements Plugin<Project> {
                     @Override
                     void execute(Project project1) {
                         project.android.applicationVariants.each { variant ->
-                            def variantName = variant.name
-                            def variantNameCapitalized = variantName.capitalize()
+                            def variantNameCapitalized = variant.name.capitalize()
                             def copyRouterInf = project.tasks.create("copyRouterInf$variantNameCapitalized", Copy) {
                                 from project.fileTree(variant.javaCompile.destinationDir)
                                 include "assets/**"
-                                into "build/intermediates/sourceFolderJavaResources/$variantName"
+
+                                StringBuilder pathResult = new StringBuilder()
+
+                                if (variant.productFlavors.size() > 0) {
+                                    StringBuilder stringBuilder = new StringBuilder();
+                                    variant.productFlavors.name.each {
+                                        stringBuilder.append(it.capitalize())
+                                    }
+                                    if (stringBuilder.length() > 0) {
+                                        pathResult.append(stringBuilder.uncapitalize())
+                                    }
+                                }
+                                if (pathResult.length() > 0) {
+                                    pathResult.append(File.separator)
+                                }
+                                pathResult.append(variant.buildType.name)
+
+                                into "build/intermediates/sourceFolderJavaResources/$pathResult"
+
                             }
                             project.tasks.findByName("transformResourcesWithMergeJavaResFor$variantNameCapitalized").dependsOn(copyRouterInf)
                         }

@@ -1,5 +1,8 @@
 allprojects {
     repositories {
+        maven {
+            url uri('../repo')
+        }
         jcenter()
         google()
         maven {
@@ -12,9 +15,6 @@ allprojects {
                 basic(BasicAuthentication)
 //                digest(DigestAuthentication)
             }
-        }
-        maven {
-            url uri('../repo')
         }
     }
 }

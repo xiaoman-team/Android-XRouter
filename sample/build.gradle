@@ -18,7 +18,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.4-2"
-        classpath 'cn.xiaoman.android.router:plugin:0.6-SNAPSHOT'
+        classpath 'cn.xiaoman.android.router:plugin:0.7-SNAPSHOT'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -49,11 +49,22 @@ android {
         abortOnError false
     }
     productFlavors {
-        dev {
-
-        }
-        prod {
-        }
+//        flavorDimensions "server","testServer"
+//        dev {
+//            dimension "server"
+//
+//        }
+//        prod {
+//            dimension "server"
+//
+//        }
+//        one{
+//            dimension "testServer"
+//        }
+//        two{
+//            dimension "testServer"
+//
+//        }
     }
 
 }
@@ -68,3 +79,13 @@ dependencies {
 //    compile project(':router')
     testCompile 'junit:junit:4.12'
 }
+//
+//android.applicationVariants.all { variant ->
+//    def variantName = variant.name
+//    def variantNameCapitalized = variantName.capitalize()
+//    def copyMetaInf = tasks.create "copyMetaInf$variantNameCapitalized", Copy
+//    copyMetaInf.from project.fileTree(javaCompile.destinationDir)
+//    copyMetaInf.include "assets/**"
+//    copyMetaInf.into "build/intermediates/sourceFolderJavaResources/$variantName"
+//    tasks.findByName("transformResourcesWithMergeJavaResFor$variantNameCapitalized").dependsOn copyMetaInf
+//}

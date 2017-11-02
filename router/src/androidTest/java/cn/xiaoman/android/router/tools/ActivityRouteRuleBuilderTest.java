@@ -9,14 +9,16 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
-import cn.android.router.BaseUnitTest;
-import cn.android.router.utils.UrlUtils;
+import cn.xiaoman.android.router.BaseUnitTest;
+import cn.xiaoman.android.router.tools.ActivityRouteRuleBuilder;
+import cn.xiaoman.android.router.utils.UrlUtils;
+
 
 /**
  * Created by kris on 16/3/11.
  */
 @RunWith(AndroidJUnit4.class)
-public class ActivityRouteRuleBuilderTest extends BaseUnitTest{
+public class ActivityRouteRuleBuilderTest extends BaseUnitTest {
 
     @Test
     public void testRuleBuilder(){

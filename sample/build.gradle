@@ -33,7 +33,7 @@ apply plugin: 'android.router'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "cn.xiaoman.android.router.sample"
         minSdkVersion 15

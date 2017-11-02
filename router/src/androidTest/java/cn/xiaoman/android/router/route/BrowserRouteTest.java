@@ -7,7 +7,8 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import cn.android.router.router.BrowserRouter;
+import cn.xiaoman.android.router.route.BrowserRoute;
+import cn.xiaoman.android.router.router.BrowserRouter;
 
 /**
  * Created by kris on 16/3/18.

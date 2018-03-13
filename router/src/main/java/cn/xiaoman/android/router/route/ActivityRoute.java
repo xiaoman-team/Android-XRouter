@@ -31,69 +31,68 @@ public class ActivityRoute extends BaseRoute {
     private WeakReference<android.app.Fragment> mFRef; //if you want to use android.app.fragment to startActivityForResult, you should set this
     private int mFlags = 0;
 
-    private ActivityRoute(IRouter router, String url){
+    private ActivityRoute(IRouter router, String url) {
         super(router, url);
     }
 
-    public Bundle getExtras(){
+    public Bundle getExtras() {
         return mExtras;
     }
 
-    private void setExtras(Bundle extras){
+    private void setExtras(Bundle extras) {
         mExtras = extras;
     }
 
-    public ActivityRoute addExtras(Bundle extras){
+    public ActivityRoute addExtras(Bundle extras) {
         mExtras.putAll(extras);
         return this;
     }
 
-    public int getInAnimation(){
+    public int getInAnimation() {
         return mInAnimation;
     }
 
-    public int getOutAnimation(){
+    public int getOutAnimation() {
         return mOutAnimation;
     }
 
 
-
-    public boolean isAnimationValid(){
-        return mInAnimation != -1 && mOutAnimation != -1 && mARef!= null && mARef.get() != null;
+    public boolean isAnimationValid() {
+        return mInAnimation != -1 && mOutAnimation != -1 && mARef != null && mARef.get() != null;
     }
 
-    public Activity getActivity(){
-        if(mARef != null && mARef.get() != null){
+    public Activity getActivity() {
+        if (mARef != null && mARef.get() != null) {
             return mARef.get();
         } else {
             return null;
         }
     }
 
-    public Fragment getSupportFragment(){
+    public Fragment getSupportFragment() {
         return mSupportFRef != null ? mSupportFRef.get() : null;
     }
 
-    public android.app.Fragment getFragment(){
+    public android.app.Fragment getFragment() {
         return mFRef != null ? mFRef.get() : null;
     }
 
-    public int getRequestCode(){
+    public int getRequestCode() {
         return mRequestCode;
     }
 
-    public int getOpenType(){
+    public int getOpenType() {
         return mOpenType;
     }
 
-    public ActivityRoute setAnimation(Activity activity, int inAnimation, int outAnimation){
+    public ActivityRoute setAnimation(Activity activity, int inAnimation, int outAnimation) {
         mARef = new WeakReference<>(activity);
         mInAnimation = inAnimation;
         mOutAnimation = outAnimation;
         return this;
     }
 
-    public int getFlags(){
+    public int getFlags() {
         return mFlags;
     }
 
@@ -101,90 +100,95 @@ public class ActivityRoute extends BaseRoute {
     /**
      * 设置打开页面的方式为startActivity，这也是默认的打开方式
      */
-    public ActivityRoute withOpenMethodStart(Activity activity){
+    public ActivityRoute withOpenMethodStart(Activity activity) {
         mOpenType = START;
         mARef = new WeakReference<>(activity);
         return this;
     }
 
-    public ActivityRoute withOpenMethodStartForResult(Activity activity, int requestCode){
+    public ActivityRoute withOpenMethodStartForResult(Activity activity, int requestCode) {
         mRequestCode = requestCode;
         mOpenType = FOR_RESULT_ACTIVITY;
         mARef = new WeakReference<>(activity);
         return this;
     }
 
-    public ActivityRoute withOpenMethodStartForResult(Fragment fragment, int requestCode){
+    public ActivityRoute withOpenMethodStartForResult(Fragment fragment, int requestCode) {
         mRequestCode = requestCode;
         mOpenType = FOR_RESULT_SUPPORT_FRAGMENT;
         mSupportFRef = new WeakReference<Fragment>(fragment);
         return this;
     }
 
-    public ActivityRoute withOpenMethodStartForResult(android.app.Fragment fragment, int requestCode){
+    public ActivityRoute withOpenMethodStartForResult(android.app.Fragment fragment, int requestCode) {
         mRequestCode = requestCode;
         mOpenType = FOR_RESULT_FRAGMENT;
         mFRef = new WeakReference<>(fragment);
         return this;
     }
 
-    public ActivityRoute withParams(String key, Serializable value){
+    public ActivityRoute withParams(String key, Serializable value) {
         mExtras.putSerializable(key, value);
         return this;
     }
 
-    public ActivityRoute withParams(String key, Parcelable value){
+    public ActivityRoute withParams(String key, Parcelable value) {
         mExtras.putParcelable(key, value);
         return this;
     }
 
-    public ActivityRoute withParams(String key, int value){
+    public ActivityRoute withParams(String key, int value) {
         mExtras.putInt(key, value);
         return this;
     }
 
-    public ActivityRoute withParams(String key, double value){
+    public ActivityRoute withParams(String key, double value) {
         mExtras.putDouble(key, value);
         return this;
     }
 
-    public ActivityRoute withParams(String key, float value){
+    public ActivityRoute withParams(String key, float value) {
         mExtras.putFloat(key, value);
         return this;
     }
 
-    public ActivityRoute withParams(String key, char value){
+    public ActivityRoute withParams(String key, char value) {
         mExtras.putChar(key, value);
         return this;
     }
 
-    public ActivityRoute withParams(String key, CharSequence value){
+    public ActivityRoute withParams(String key, CharSequence value) {
         mExtras.putCharSequence(key, value);
         return this;
     }
 
-    public ActivityRoute withParams(String key, String value){
+    public ActivityRoute withParams(String key, String value) {
         mExtras.putString(key, value);
         return this;
     }
 
-    public ActivityRoute withParams(String key, long value){
+    public ActivityRoute withParams(String key, long value) {
         mExtras.putLong(key, value);
         return this;
     }
 
-    public ActivityRoute withParams(String key, ArrayList<Integer> value){
+    public ActivityRoute withParams(String key, ArrayList<Integer> value) {
         mExtras.putIntegerArrayList(key, value);
         return this;
     }
 
-    public ActivityRoute withFlags(int flags){
+    public ActivityRoute withParamsArrayString(String key, ArrayList<String> value) {
+        mExtras.putStringArrayList(key, value);
+        return this;
+    }
+
+    public ActivityRoute withFlags(int flags) {
         mFlags = flags;
         return this;
     }
 
 
-    public static class Builder{
+    public static class Builder {
         String mUrl;
         IRouter mRouter;
         Bundle mBundle;
@@ -198,7 +202,7 @@ public class ActivityRoute extends BaseRoute {
         int mFlags = 0;
 
 
-        public Builder(IRouter router){
+        public Builder(IRouter router) {
             mBundle = new Bundle();
             mRouter = router;
         }
@@ -208,42 +212,42 @@ public class ActivityRoute extends BaseRoute {
             return this;
         }
 
-        public Builder withParams(String key, Parcelable value){
+        public Builder withParams(String key, Parcelable value) {
             mBundle.putParcelable(key, value);
             return this;
         }
 
-        public Builder withParams(String key, int value){
+        public Builder withParams(String key, int value) {
             mBundle.putInt(key, value);
             return this;
         }
 
-        public Builder withParams(String key, double value){
+        public Builder withParams(String key, double value) {
             mBundle.putDouble(key, value);
             return this;
         }
 
-        public Builder withParams(String key, float value){
+        public Builder withParams(String key, float value) {
             mBundle.putFloat(key, value);
             return this;
         }
 
-        public Builder withParams(String key, char value){
+        public Builder withParams(String key, char value) {
             mBundle.putChar(key, value);
             return this;
         }
 
-        public Builder withParams(String key, CharSequence value){
+        public Builder withParams(String key, CharSequence value) {
             mBundle.putCharSequence(key, value);
             return this;
         }
 
-        public Builder withParams(String key, String value){
+        public Builder withParams(String key, String value) {
             mBundle.putString(key, value);
             return this;
         }
 
-        public Builder withParams(String key, long value){
+        public Builder withParams(String key, long value) {
             mBundle.putLong(key, value);
             return this;
         }
@@ -251,55 +255,55 @@ public class ActivityRoute extends BaseRoute {
         /**
          * 设置打开页面的方式为startActivity，这也是默认的打开方式
          */
-        public Builder withOpenMethodStart(Activity activity){
+        public Builder withOpenMethodStart(Activity activity) {
             mOpenType = START;
             mAct = activity;
             return this;
         }
 
-        public Builder withOpenMethodStartForResult(Activity activity, int requestCode){
+        public Builder withOpenMethodStartForResult(Activity activity, int requestCode) {
             mRequestCode = requestCode;
             mOpenType = FOR_RESULT_ACTIVITY;
             mAct = activity;
             return this;
         }
 
-        public Builder withOpenMethodStartForResult(Fragment fragment, int requestCode){
+        public Builder withOpenMethodStartForResult(Fragment fragment, int requestCode) {
             mRequestCode = requestCode;
             mOpenType = FOR_RESULT_SUPPORT_FRAGMENT;
             mSupportFra = fragment;
             return this;
         }
 
-        public Builder withOpenMethodStartForResult(android.app.Fragment fragment, int requestCode){
+        public Builder withOpenMethodStartForResult(android.app.Fragment fragment, int requestCode) {
             mRequestCode = requestCode;
             mOpenType = FOR_RESULT_FRAGMENT;
             mFra = fragment;
             return this;
         }
 
-        public Builder withFlags(int flags){
+        public Builder withFlags(int flags) {
             mFlags = flags;
             return this;
         }
 
         /**
-         *
          * @param extra
          * @return
          */
-        public Builder putAllParams(Bundle extra){
+        public Builder putAllParams(Bundle extra) {
             mBundle.putAll(extra);
             return this;
         }
 
         /**
          * set the animation of activity transform
+         *
          * @param inAnimation
          * @param outAnimation
          * @return
          */
-        public Builder withAnimation(Activity activity, int inAnimation, int outAnimation){
+        public Builder withAnimation(Activity activity, int inAnimation, int outAnimation) {
             mAct = activity;
             mInAnimation = inAnimation;
             mOutAnimation = outAnimation;
@@ -307,14 +311,13 @@ public class ActivityRoute extends BaseRoute {
         }
 
 
-
-        public ActivityRoute build(){
+        public ActivityRoute build() {
             ActivityRoute route = new ActivityRoute(mRouter, mUrl);
-            if(mAct!=null && mInAnimation != -1 && mOutAnimation != -1){
+            if (mAct != null && mInAnimation != -1 && mOutAnimation != -1) {
                 route.setAnimation(mAct, mInAnimation, mOutAnimation);
             }
             route.withOpenMethodStart(mAct);
-            switch (mOpenType){
+            switch (mOpenType) {
                 case 1:
                     route.withOpenMethodStartForResult(mAct, mRequestCode);
                     break;

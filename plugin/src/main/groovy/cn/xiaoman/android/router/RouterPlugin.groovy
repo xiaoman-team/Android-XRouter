@@ -30,14 +30,14 @@ public class RouterPlugin implements Plugin<Project> {
             }
 
             project.dependencies {
-                compile 'cn.xiaoman.android.router:router:0.12-SNAPSHOT'
+                compile 'cn.xiaoman.android.router:router:0.13-SNAPSHOT'
 
                 if (hasKotlin) {
-                    kapt 'cn.xiaoman.android.router:compiler:0.12-SNAPSHOT'
+                    kapt 'cn.xiaoman.android.router:compiler:0.13-SNAPSHOT'
                 } else if (hasApt) {
-                    apt 'cn.xiaoman.android.router:compiler:0.12-SNAPSHOT'
+                    apt 'cn.xiaoman.android.router:compiler:0.13-SNAPSHOT'
                 } else {
-                    annotationProcessor 'cn.xiaoman.android.router:compiler:0.12-SNAPSHOT'
+                    annotationProcessor 'cn.xiaoman.android.router:compiler:0.13-SNAPSHOT'
                 }
 
             }

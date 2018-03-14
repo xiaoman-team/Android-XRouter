@@ -32,7 +32,7 @@ dependencies {
 
     compile project(':annotation')
 //    compile 'cn.xiaoman.android.router:annotation:' + VERSION_NAME
-    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:appcompat-v7:27.1.0'
     compile 'com.jakewharton.timber:timber:4.5.1'
     compile 'org.apache.commons:commons-collections4:4.0'
     compile 'com.google.code.gson:gson:2.8.2'

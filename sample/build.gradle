@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        google()
         maven {
             url uri('../repo')
         }
@@ -18,13 +19,10 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.30"
-        classpath 'cn.xiaoman.android.router:plugin:0.9-SNAPSHOT'
+        classpath 'cn.xiaoman.android.router:plugin:0.13-SNAPSHOT'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
-}
-plugins {
-    id "com.dorongold.task-tree" version "1.3"
 }
 apply plugin: 'com.android.application'
 //apply plugin: 'kotlin-android'
@@ -32,8 +30,8 @@ apply plugin: 'android.router'
 
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.3'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "cn.xiaoman.android.router.sample"
         minSdkVersion 15
@@ -77,7 +75,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:appcompat-v7:27.1.0'
 //    annotationProcessor project(':compiler')
 //    compile project(':router')
     testCompile 'junit:junit:4.12'

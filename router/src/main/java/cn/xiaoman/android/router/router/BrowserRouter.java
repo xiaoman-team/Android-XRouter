@@ -7,6 +7,7 @@ import android.net.Uri;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import cn.xiaoman.android.router.route.BaseRoute;
 import cn.xiaoman.android.router.route.BrowserRoute;
 import cn.xiaoman.android.router.route.IRoute;
 
@@ -32,7 +33,7 @@ public class BrowserRouter extends BaseRouter {
     }
 
     protected boolean open(Context context, IRoute route){
-        if(doOnInterceptor(context, route.getUrl())){
+        if(doOnInterceptor(context, ((BrowserRoute)route))){
             return true;
         }
         Uri uri = Uri.parse(route.getUrl());
@@ -82,9 +83,9 @@ public class BrowserRouter extends BaseRouter {
 
 
 
-    private boolean doOnInterceptor(Context context, String url){
+    private boolean doOnInterceptor(Context context, BaseRoute baseRoute){
         if(interceptor != null){
-            return interceptor.intercept(context, url);
+            return interceptor.intercept(context, baseRoute);
         }
         return false;
     }

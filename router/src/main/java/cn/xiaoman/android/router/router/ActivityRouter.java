@@ -29,6 +29,7 @@ import cn.xiaoman.android.router.exception.InvalidRoutePathException;
 import cn.xiaoman.android.router.exception.InvalidValueTypeException;
 import cn.xiaoman.android.router.exception.RouteNotFoundException;
 import cn.xiaoman.android.router.route.ActivityRoute;
+import cn.xiaoman.android.router.route.BaseRoute;
 import cn.xiaoman.android.router.route.IRoute;
 import cn.xiaoman.android.router.tools.ActivityRouteRuleBuilder;
 import cn.xiaoman.android.router.utils.UrlUtils;
@@ -205,28 +206,28 @@ public class ActivityRouter extends BaseRouter {
             try {
                 switch (aRoute.getOpenType()) {
                     case ActivityRoute.START:
-                        if (doOnInterceptor(aRoute.getActivity(), route.getUrl())) {
+                        if (doOnInterceptor(aRoute.getActivity(), aRoute)) {
                             return true;
                         }
                         open(aRoute, aRoute.getActivity());
                         ret = true;
                         break;
                     case ActivityRoute.FOR_RESULT_ACTIVITY:
-                        if (doOnInterceptor(aRoute.getActivity(), route.getUrl())) {
+                        if (doOnInterceptor(aRoute.getActivity(), aRoute)) {
                             return true;
                         }
                         openForResult(aRoute, aRoute.getActivity(), aRoute.getRequestCode());
                         ret = true;
                         break;
                     case ActivityRoute.FOR_RESULT_SUPPORT_FRAGMENT:
-                        if (doOnInterceptor(aRoute.getSupportFragment().getActivity(), route.getUrl())) {
+                        if (doOnInterceptor(aRoute.getSupportFragment().getActivity(), aRoute)) {
                             return true;
                         }
                         openForResult(aRoute, aRoute.getSupportFragment(), aRoute.getRequestCode());
                         ret = true;
                         break;
                     case ActivityRoute.FOR_RESULT_FRAGMENT:
-                        if (doOnInterceptor(aRoute.getFragment().getActivity(), route.getUrl())) {
+                        if (doOnInterceptor(aRoute.getFragment().getActivity(), aRoute)) {
                             return true;
                         }
                         openForResult(aRoute, aRoute.getFragment(), aRoute.getRequestCode());
@@ -254,12 +255,13 @@ public class ActivityRouter extends BaseRouter {
 
     @Override
     public boolean open(Context context, String url) {
-        if (doOnInterceptor(context, url)) {
-            return true;
-        }
+
         IRoute route = getRoute(url);
         if (route instanceof ActivityRoute) {
             ActivityRoute aRoute = (ActivityRoute) route;
+            if (doOnInterceptor(context, aRoute)) {
+                return true;
+            }
             try {
                 open(aRoute, context);
                 return true;
@@ -270,9 +272,9 @@ public class ActivityRouter extends BaseRouter {
         return false;
     }
 
-    private boolean doOnInterceptor(Context context, String url) {
+    private boolean doOnInterceptor(Context context, BaseRoute baseRoute) {
         if (interceptor != null) {
-            return interceptor.intercept(context != null ? context : mBaseContext, url);
+            return interceptor.intercept(context != null ? context : mBaseContext, baseRoute);
         }
         return false;
     }

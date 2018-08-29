@@ -18,7 +18,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.41"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.61"
         classpath 'cn.xiaoman.android.router:plugin:0.17-SNAPSHOT'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -31,7 +31,6 @@ apply plugin: 'android.router'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "cn.xiaoman.android.router.sample"
         minSdkVersion 15
@@ -50,22 +49,7 @@ android {
         abortOnError false
     }
     productFlavors {
-//        flavorDimensions "server","testServer"
-//        dev {
-//            dimension "server"
-//
-//        }
-//        prod {
-//            dimension "server"
-//
-//        }
-//        one{
-//            dimension "testServer"
-//        }
-//        two{
-//            dimension "testServer"
-//
-//        }
+
     }
 
 }
@@ -75,6 +59,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+
 //    annotationProcessor project(':compiler')
 //    compile project(':router')
     testImplementation 'junit:junit:4.12'

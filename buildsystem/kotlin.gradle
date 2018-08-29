@@ -1,4 +1,4 @@
-def kotlin_version = '1.2.41'
+def kotlin_version = '1.2.61'
 
 subprojects {
     project.buildscript {
@@ -24,7 +24,7 @@ subprojects {
                 }
             } else {
                 project.plugins.apply 'kotlin-android'
-                project.dependencies.compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}"
+                project.dependencies.implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}"
                 project.android.sourceSets {
                     main.java.srcDirs += 'src/main/kotlin'
                     test.java.srcDirs += 'src/test/kotlin'

@@ -30,19 +30,20 @@ android {
 
 dependencies {
 
-    compile project(':annotation')
+    implementation project(':annotation')
 //    compile 'cn.xiaoman.android.router:annotation:' + VERSION_NAME
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'com.jakewharton.timber:timber:4.7.0'
-    compile 'org.apache.commons:commons-collections4:4.0'
-    compile 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.android.support:support-fragment:27.1.1'
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'org.apache.commons:commons-collections4:4.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
     // Set this dependency to build and run Espresso tests
     // Optional -- UI testing with Espresso
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
     // Set this dependency to use JUnit 4 rules
-    androidTestImplementation 'com.android.support.test:rules:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
 
 }

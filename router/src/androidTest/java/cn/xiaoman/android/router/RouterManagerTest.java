@@ -2,8 +2,8 @@ package cn.xiaoman.android.router;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
 
 import junit.framework.Assert;

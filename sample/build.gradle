@@ -1,43 +1,17 @@
-buildscript {
-    repositories {
-        google()
-        maven {
-            url uri('../repo')
-        }
-        maven {
-            url "http://120.24.219.64:8808/nexus/content/groups/public"
-            credentials {
-                username 'android'
-                password 'android@xiaoman.cn'
-            }
-            authentication {
-                basic(BasicAuthentication)
-//                digest(DigestAuthentication)
-            }
-        }
-        jcenter()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.61"
-        classpath 'cn.xiaoman.android.router:plugin:0.17-SNAPSHOT'
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
 apply plugin: 'com.android.application'
-//apply plugin: 'kotlin-android'
 apply plugin: 'android.router'
 
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion rootProject.ext.androidCompileSdkVersion
+
     defaultConfig {
         applicationId "cn.xiaoman.android.router.sample"
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -48,30 +22,14 @@ android {
     lintOptions {
         abortOnError false
     }
-    productFlavors {
-
-    }
-
 }
 
 dependencies {
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0-beta01', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation "android.arch.lifecycle:extensions:1.1.1"
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
 
-//    annotationProcessor project(':compiler')
-//    compile project(':router')
     testImplementation 'junit:junit:4.12'
 }
-//
-//android.applicationVariants.all { variant ->
-//    def variantName = variant.name
-//    def variantNameCapitalized = variantName.capitalize()
-//    def copyMetaInf = tasks.create "copyMetaInf$variantNameCapitalized", Copy
-//    copyMetaInf.from project.fileTree(javaCompile.destinationDir)
-//    copyMetaInf.include "assets/**"
-//    copyMetaInf.into "build/intermediates/sourceFolderJavaResources/$variantName"
-//    tasks.findByName("transformResourcesWithMergeJavaResFor$variantNameCapitalized").dependsOn copyMetaInf
-//}

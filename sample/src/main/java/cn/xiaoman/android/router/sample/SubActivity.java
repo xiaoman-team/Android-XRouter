@@ -1,11 +1,11 @@
 package cn.xiaoman.android.router.sample;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
 import cn.xiaoman.android.router.Router;
 import cn.xiaoman.android.router.annotation.RouterMap;
 

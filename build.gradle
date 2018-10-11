@@ -1,19 +1,32 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply from: 'buildsystem/ci.gradle'
 apply from: 'buildsystem/dependencies.gradle'
-apply from: 'buildsystem/kotlin.gradle'
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven {
+            url uri('https://dl.bintray.com/xiaoman-team/maven/')
+        }
+    }
+}
 
 buildscript {
     repositories {
         google()
         jcenter()
+        maven {
+            url uri('https://dl.bintray.com/xiaoman-team/maven/')
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath 'cn.xiaoman.android.router:plugin:1.0.0'
     }
 }
+
+
 
 task clean(type: Delete) {
     delete rootProject.buildDir

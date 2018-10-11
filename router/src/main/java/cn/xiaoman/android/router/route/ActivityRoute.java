@@ -3,12 +3,12 @@ package cn.xiaoman.android.router.route;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.Fragment;
 
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
+import androidx.fragment.app.Fragment;
 import cn.xiaoman.android.router.router.IRouter;
 
 

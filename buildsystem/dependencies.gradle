@@ -1,9 +1,10 @@
 ext {
 
-    androidBuildToolsVersion = '27.0.3'
+    androidGradlePlugin = "com.android.tools.build:gradle:3.2.0"
+
     androidMinSdkVersion = 15
     androidTargetSdkVersion = 25
-    androidCompileSdkVersion = 27
+    androidCompileSdkVersion = 28
 
     androidVersionCode = gitVersionCode()
     androidVersionName = gitVersionName()

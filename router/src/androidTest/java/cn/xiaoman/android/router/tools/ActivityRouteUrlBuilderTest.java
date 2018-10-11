@@ -1,13 +1,11 @@
 package cn.xiaoman.android.router.tools;
 
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import cn.xiaoman.android.router.tools.ActivityRouteUrlBuilder;
 
 /**
  * Created by kris on 16/3/11.

@@ -1,4 +1,5 @@
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 publishing {
     publications {
@@ -69,20 +70,8 @@ publishing {
         }
     }
     repositories {
-//        maven {
-//            url uri('../repo')
-//        }
         maven {
-            url { isReleaseBuild() ? RELEASE_REPOSITORY_URL : SNAPSHOT_REPOSITORY_URL }
-
-            credentials {
-                username getRepositoryUsername()
-                password getRepositoryPassword()
-            }
-            authentication {
-                basic(BasicAuthentication)
-//                digest(DigestAuthentication)
-            }
+            url uri('../repo')
         }
     }
 }
@@ -119,14 +108,63 @@ javadoc {
 }
 
 
-def isReleaseBuild() {
-    return VERSION_NAME.contains("SNAPSHOT") == false
+def getBintrayUserProperty() {
+    return hasProperty('BINTRAY_USER') ? BINTRAY_USER : ""
 }
 
-def getRepositoryUsername() {
-    return hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ""
+def getBintrayApiKeyProperty() {
+    return hasProperty('BINTRAY_APIKEY') ? BINTRAY_APIKEY : ""
 }
 
-def getRepositoryPassword() {
-    return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
+def getGpgPassphraseProperty() {
+    return hasProperty('GPG_PASSPHRASE') ? GPG_PASSPHRASE : ""
+}
+
+def getUserTokenProperty() {
+    return hasProperty('USERTOKEN') ? USERTOKEN : ""
+}
+
+def getUserPasswordProperty() {
+    return hasProperty('USERPASSWORD') ? USERPASSWORD : ""
+}
+
+// gradle bintrayUpload
+bintray {
+    user = getBintrayUserProperty()
+    key = getBintrayApiKeyProperty()
+    def passphrase = getGpgPassphraseProperty()
+    def userToken = getUserTokenProperty()
+    def userPassword = getUserPasswordProperty()
+    publications = ['maven']
+
+    dryRun = false
+    publish = true
+    pkg {
+        repo = 'maven'
+        name = 'xrouter-'+project.getName()
+        desc = POM_NAME
+        userOrg = 'xiaoman-team'
+        websiteUrl = POM_URL
+        issueTrackerUrl = POM_ISSUE_URL
+        vcsUrl = POM_URL
+        licenses = ['Apache-2.0']
+        labels = ['android', 'aar']
+        publicDownloadNumbers = true
+
+        version {
+            name = VERSION_NAME
+            vcsTag = VERSION_NAME
+            gpg {
+                sign = true //Determines whether to GPG sign the files. The default is false
+                passphrase = 'passphrase' //Optional. The passphrase for GPG signing'
+            }
+            mavenCentralSync {
+                //Optional (true by default). Determines whether to sync the version to Maven Central.
+                sync = false
+                user = userToken //OSS user token
+                password = userPassword //OSS user password
+                close = '1'
+            }
+        }
+    }
 }

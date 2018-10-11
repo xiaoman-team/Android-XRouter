@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -24,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import cn.xiaoman.android.router.BuildConfig;
 import cn.xiaoman.android.router.exception.InvalidRoutePathException;
 import cn.xiaoman.android.router.exception.InvalidValueTypeException;

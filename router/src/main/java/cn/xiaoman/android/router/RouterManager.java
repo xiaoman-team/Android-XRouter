@@ -1,13 +1,13 @@
 package cn.xiaoman.android.router;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import androidx.annotation.Nullable;
 import cn.xiaoman.android.router.interceptor.Interceptor;
 import cn.xiaoman.android.router.route.IRoute;
 import cn.xiaoman.android.router.router.ActivityRouter;

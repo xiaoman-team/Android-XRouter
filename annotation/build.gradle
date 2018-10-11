@@ -4,7 +4,6 @@ sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
 dependencies {
-//    compile 'org.aspectj:aspectjrt:1.8.9'
 }
 
 apply from: "${rootDir}/mavenUpload.gradle"

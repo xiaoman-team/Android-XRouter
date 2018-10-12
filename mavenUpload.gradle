@@ -37,34 +37,49 @@ publishing {
                 developer.appendNode('id', POM_DEVELOPER_ID)
                 developer.appendNode('name', POM_DEVELOPER_NAME)
 
-                def dependenciesNode = asNode().appendNode('dependencies')
+                final dependenciesNode = asNode().appendNode('dependencies')
 
-                //Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
                 ext.addDependency = { Dependency dep, String scope ->
-                    if ('unspecified' != dep.name) {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        if (rootProject.name == dep.group) {
-                            dependencyNode.appendNode('groupId', POM_GROUP)
-                        } else {
-                            dependencyNode.appendNode('groupId', dep.group)
+                    if (dep.group == null || dep.version == null || dep.name == null || dep.name == "unspecified")
+                        return // ignore invalid dependencies
+
+                    final dependencyNode = dependenciesNode.appendNode('dependency')
+
+                    if (rootProject.name.equals(dep.group)) {
+                        dependencyNode.appendNode('groupId', POM_GROUP)
+                    } else {
+                        dependencyNode.appendNode('groupId', dep.group)
+                    }
+                    dependencyNode.appendNode('artifactId', dep.name)
+                    if ('unspecified'.equals(dep.version)) {
+                        dependencyNode.appendNode('version', VERSION_NAME)
+                    } else {
+                        dependencyNode.appendNode('version', dep.version)
+                    }
+                    dependencyNode.appendNode('scope', scope)
+
+                    if (!dep.transitive) {
+                        // If this dependency is transitive, we should force exclude all its dependencies them from the POM
+                        final exclusionNode = dependencyNode.appendNode('exclusions').appendNode('exclusion')
+                        exclusionNode.appendNode('groupId', '*')
+                        exclusionNode.appendNode('artifactId', '*')
+                    } else if (!dep.properties.excludeRules.empty) {
+                        // Otherwise add specified exclude rules
+                        final exclusionNode = dependencyNode.appendNode('exclusions').appendNode('exclusion')
+                        dep.properties.excludeRules.each { ExcludeRule rule ->
+                            exclusionNode.appendNode('groupId', rule.group ?: '*')
+                            exclusionNode.appendNode('artifactId', rule.module ?: '*')
                         }
-                        dependencyNode.appendNode('artifactId', dep.name)
-                        if ('unspecified' == dep.version) {
-                            dependencyNode.appendNode('version', VERSION_NAME)
-                        } else {
-                            dependencyNode.appendNode('version', dep.version)
-                        }
-                        dependencyNode.appendNode('scope', scope)
                     }
                 }
 
                 // List all "compile" dependencies (for old Gradle)
                 configurations.compile.getAllDependencies().each { dep -> addDependency(dep, "compile") }
+                // List all "api" dependencies (for new Gradle) as "compile" dependencies
                 if (project.hasProperty("android")) {
-                    // List all "api" dependencies (for new Gradle) as "compile" dependencies
                     configurations.api.getAllDependencies().each { dep -> addDependency(dep, "compile") }
                     // List all "implementation" dependencies (for new Gradle) as "runtime" dependencies
-                    configurations.implementation.getAllDependencies().each { dep -> addDependency(dep, "runtime") }
+                    configurations.implementation.getAllDependencies().each { dep -> addDependency(dep, "compile") }
                 }
             }
         }
@@ -141,7 +156,7 @@ bintray {
     publish = true
     pkg {
         repo = 'maven'
-        name = 'xrouter-'+project.getName()
+        name = 'Android-XRouter'
         desc = POM_NAME
         userOrg = 'xiaoman-team'
         websiteUrl = POM_URL

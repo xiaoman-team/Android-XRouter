@@ -30,6 +30,7 @@ public class RouterPlugin implements Plugin<Project> {
             }
 
             project.dependencies {
+                implementation 'cn.xiaoman.android.router:annotation:1.0.0'
                 implementation 'cn.xiaoman.android.router:router:1.0.0'
 
                 if (hasKotlin) {

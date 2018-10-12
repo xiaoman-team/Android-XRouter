@@ -3,21 +3,21 @@ apply from: 'buildsystem/dependencies.gradle'
 
 allprojects {
     repositories {
+        maven {
+            url uri('http://dl.bintray.com/xiaoman-team/maven')
+        }
         google()
         jcenter()
-        maven {
-            url uri('https://dl.bintray.com/xiaoman-team/maven/')
-        }
     }
 }
 
 buildscript {
     repositories {
+        maven {
+            url uri('https://dl.bintray.com/xiaoman-team/maven')
+        }
         google()
         jcenter()
-        maven {
-            url uri('https://dl.bintray.com/xiaoman-team/maven/')
-        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.0'

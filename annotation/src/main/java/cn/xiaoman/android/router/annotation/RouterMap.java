@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 /**
  * Created by kris on 16/4/20.
  */
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 public @interface RouterMap {
-    String [] value();
+    String[] value();
 }

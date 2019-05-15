@@ -10,10 +10,16 @@ dependencies {
     compile rootProject.ext.androidGradlePlugin
 }
 
-sourceSets {
-    main {
-        groovy {
-            srcDirs = ['src/main/groovy']
+task createProperties(dependsOn: processResources) {
+    doLast {
+        new File("$buildDir/resources/main/version.properties").withWriter { w ->
+            Properties p = new Properties()
+            p['version'] = VERSION_NAME
+            p.store w, null
         }
     }
+}
+
+classes {
+    dependsOn createProperties
 }

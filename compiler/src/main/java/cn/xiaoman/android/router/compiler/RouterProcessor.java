@@ -1,10 +1,11 @@
 package cn.xiaoman.android.router.compiler;
 
+import org.json.JSONObject;
 
-import com.google.auto.service.AutoService;
-import com.google.gson.Gson;
-
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,10 +13,7 @@ import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
-import javax.annotation.processing.FilerException;
-import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -27,19 +25,18 @@ import javax.tools.StandardLocation;
 
 import cn.xiaoman.android.router.annotation.RouterMap;
 
-@AutoService(Processor.class)
 public class RouterProcessor extends AbstractProcessor {
     private Types types;
-    private Messager messager;
     private Filer filer;
 
-    public static final String ASSET_PATH = "assets/router/";
+    private HashMap<String, String> providers = new HashMap<>();
+
+    public static final String ASSET_PATH = "assets/router";
     public static final String FILE_SUFFIX = ".json";
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        messager = processingEnv.getMessager();
         filer = processingEnv.getFiler();
         types = processingEnv.getTypeUtils();
     }
@@ -56,13 +53,33 @@ public class RouterProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+
         try {
+            return processImpl(annotations, roundEnv);
+        } catch (Exception e) {
+            // We don't allow exceptions of any kind to propagate to the compiler
+            StringWriter writer = new StringWriter();
+            e.printStackTrace(new PrintWriter(writer));
+            fatalError(writer.toString());
+            return true;
+        }
+    }
 
-            if (annotations == null || annotations.isEmpty()) {
-                System.out.println(">>> annotations is null... <<<");
-                return true;
-            }
+    private boolean processImpl(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        if (roundEnv.processingOver()) {
+            generateConfigFiles();
+        } else {
+            processAnnotations(annotations, roundEnv);
+        }
 
+        return true;
+    }
+
+    private void processAnnotations(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        if (annotations == null || annotations.isEmpty()) {
+            System.out.println(">>> annotations is null... <<<");
+        } else {
+            JSONObject jsonObject = new JSONObject();
             HashMap<String, String> map = new HashMap<>();
             for (TypeElement annotation : annotations) {
                 Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(annotation);
@@ -77,55 +94,36 @@ public class RouterProcessor extends AbstractProcessor {
                         if (key.length() == 0) {
                             break;
                         }
-                        map.put(key, clazzName);
+                        jsonObject.put(key, clazzName);
                     }
 
                 }
             }
-            //生成Java代码
-            createJava(map);
+            String content = jsonObject.toString();
+            //打印出内容
+            System.out.println(">>> content:... <<<   " + content);
+            providers.put(types.hashCode() + FILE_SUFFIX, content);
 
-        } catch (FilerException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            error(e.getMessage());
         }
-
-        return true;
     }
 
-    /**
-     * javapoet 🔚介绍
-     * <p>
-     * http://www.jianshu.com/p/95f12f72f69a
-     * http://www.jianshu.com/p/76e9e3a8ec0f
-     * http://blog.csdn.net/crazy1235/article/details/51876192
-     * http://blog.csdn.net/qq_26376637/article/details/52374063
-     *
-     * @param map
-     * @throws Exception
-     */
-    private void createJava(HashMap<String, String> map) throws Exception {
-        String content = new Gson().toJson(map);
-        //打印出内容
-        System.out.println(">>> content:... <<<   " + content);
-        writeFile(content);
-    }
+    private void generateConfigFiles() {
+        for (String providerInterface : providers.keySet()) {
+            String resourceFile = ASSET_PATH + File.separator + providerInterface;
+            log("Working on resource file: " + resourceFile);
+            try {
+                FileObject existingFile = filer
+                        .createResource(StandardLocation.CLASS_OUTPUT, "", resourceFile);
 
-    /**
-     * 生成JSON文件保存到Assets里面
-     *
-     * @param content
-     * @throws Exception
-     */
-    private void writeFile(String content) throws Exception {
-        FileObject fileObject = createResource();
-//        FileObject fileObject = createSourcePath();
-
-        Writer writer = fileObject.openWriter();
-        writer.write(content);
-        writer.close();
-//        System.out.println("Done");
+                Writer writer = existingFile.openWriter();
+                writer.write(providers.get(providerInterface));
+                writer.close();
+                log("Looking for existing resource file at " + existingFile.toUri());
+            } catch (IOException e) {
+                fatalError("Unable to create " + resourceFile + ", " + e);
+                return;
+            }
+        }
     }
 
     /**
@@ -148,9 +146,14 @@ public class RouterProcessor extends AbstractProcessor {
         return resource;
     }
 
+    private void fatalError(String msg) {
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "FATAL ERROR: " + msg);
+    }
 
-    private void error(String error) {
-        messager.printMessage(Diagnostic.Kind.ERROR, error);
+    private void log(String msg) {
+        if (processingEnv.getOptions().containsKey("debug")) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, msg);
+        }
     }
 
 

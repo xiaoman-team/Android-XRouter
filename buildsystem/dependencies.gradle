@@ -1,6 +1,6 @@
 ext {
 
-    androidGradlePlugin = "com.android.tools.build:gradle:3.2.0"
+    androidGradlePlugin = "com.android.tools.build:gradle:3.4.0"
 
     androidMinSdkVersion = 15
     androidTargetSdkVersion = 25

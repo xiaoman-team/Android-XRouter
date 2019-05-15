@@ -4,6 +4,9 @@ apply from: 'buildsystem/dependencies.gradle'
 allprojects {
     repositories {
         maven {
+            url uri('../repo')
+        }
+        maven {
             url uri('http://dl.bintray.com/xiaoman-team/maven')
         }
         google()
@@ -14,18 +17,21 @@ allprojects {
 buildscript {
     repositories {
         maven {
+            url uri('repo')
+        }
+        maven {
             url uri('https://dl.bintray.com/xiaoman-team/maven')
         }
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.android.tools.build:gradle:3.4.0'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
-        classpath 'cn.xiaoman.android.router:plugin:1.0.0'
+        classpath 'cn.xiaoman.android.router:plugin:1.0.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.31"
     }
 }
-
 
 
 task clean(type: Delete) {

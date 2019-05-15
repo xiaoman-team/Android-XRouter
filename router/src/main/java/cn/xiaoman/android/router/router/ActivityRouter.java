@@ -8,9 +8,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.gson.Gson;
 
 import org.apache.commons.collections4.queue.CircularFifoQueue;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,12 +19,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import cn.xiaoman.android.router.BuildConfig;
 import cn.xiaoman.android.router.exception.InvalidRoutePathException;
 import cn.xiaoman.android.router.exception.InvalidValueTypeException;
@@ -84,7 +87,18 @@ public class ActivityRouter extends BaseRouter {
                     for (String path : list) {
                         InputStream inputStream = assetManager.open(root + "/" + path);
                         String s = InputStream2String(inputStream);
-                        Map<String, String> map = new Gson().fromJson(s, Map.class);
+                        Map<String, String> map = new HashMap<>();
+                        try {
+                            JSONObject jsonObject = new JSONObject(s);
+                            Iterator keyIterator = jsonObject.keys();
+                            while (keyIterator.hasNext()) {
+                                String key = (String) keyIterator.next();
+                                String value = jsonObject.optString(key, "");
+                                map.put(key, value);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         result.putAll(map);
 
                     }

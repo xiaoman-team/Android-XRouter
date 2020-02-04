@@ -1,10 +1,10 @@
 ext {
 
-    androidGradlePlugin = "com.android.tools.build:gradle:3.4.0"
+    androidGradlePlugin = "com.android.tools.build:gradle:3.5.3"
 
     androidMinSdkVersion = 15
     androidTargetSdkVersion = 25
-    androidCompileSdkVersion = 28
+    androidCompileSdkVersion = 29
 
     androidVersionCode = gitVersionCode()
     androidVersionName = gitVersionName()

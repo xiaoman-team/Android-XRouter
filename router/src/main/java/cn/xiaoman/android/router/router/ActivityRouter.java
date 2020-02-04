@@ -13,6 +13,7 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;

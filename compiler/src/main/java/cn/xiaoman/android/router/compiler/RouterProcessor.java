@@ -109,7 +109,7 @@ public class RouterProcessor extends AbstractProcessor {
 
     private void generateConfigFiles() {
         for (String providerInterface : providers.keySet()) {
-            String resourceFile = ASSET_PATH + File.separator + providerInterface;
+            String resourceFile = ASSET_PATH + "/" + providerInterface;
             log("Working on resource file: " + resourceFile);
             try {
                 FileObject existingFile = filer
